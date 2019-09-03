@@ -8,6 +8,7 @@ public class DiamondSquare : MonoBehaviour
     public float LandSize;
     public float maxHeight;
     public Shader shader;
+    public Material material;
 
     Vector3[] allVerts;
 
@@ -18,7 +19,7 @@ public class DiamondSquare : MonoBehaviour
 
         MeshRenderer renderer = this.gameObject.AddComponent<MeshRenderer>();
         renderer.material.shader = this.shader;
-
+        //renderer.material.color = 
         createLandscape();
     }
 
