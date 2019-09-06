@@ -7,20 +7,27 @@ public class DiamondSquare : MonoBehaviour
     public int nPoints;
     public float LandSize;
     public float maxHeight;
+    private float maxGenHeight;
     public Shader shader;
     public Material material;
-
-    Vector3[] allVerts;
+    MeshCollider collider;
+    private Vector3[] allVerts;
 
     void Start()
     {
+        maxGenHeight = -maxHeight;
         MeshFilter landscape = this.gameObject.AddComponent<MeshFilter>();
         landscape.mesh = this.createLandscape();
 
         MeshRenderer renderer = this.gameObject.AddComponent<MeshRenderer>();
         renderer.material.shader = this.shader;
         //renderer.material.color = 
-        createLandscape();
+       // createLandscape();
+    }
+
+    private void Update()
+    {
+        MeshRenderer renderer = this.gameObject.GetComponent<MeshRenderer>();
     }
 
     Mesh createLandscape(){
@@ -29,13 +36,14 @@ public class DiamondSquare : MonoBehaviour
         float halfLength = 0.5f * LandSize;
         float step = LandSize / numGap;
         int triIndex = 0;
-
-        Mesh m = new Mesh();
+        
 
         allVerts = new Vector3[numVerts];
         Vector2[] uvs = new Vector2[numVerts];
         int[] triangles = new int [numGap*numGap*6];
 
+        Mesh m = new Mesh();
+        GetComponent<MeshFilter>().mesh = m;
 
         for (int i=0; i < nPoints; i++){
             for (int j=0; j < nPoints; j++){
@@ -95,13 +103,62 @@ public class DiamondSquare : MonoBehaviour
 
         }
 
+        for(int i = 0; i<allVerts.Length; i++)
+        {
+            if (allVerts[i].y > maxGenHeight)
+            {
+                maxGenHeight = allVerts[i].y;
+            }
+        }
 
+        double snowLine = 0.8 * maxGenHeight;
+        double rockLine = 0.6 * maxGenHeight;
+        double grassLine = 0.3 * maxGenHeight;
+        double sandLine = -0.1 * maxGenHeight;
+        double shallowSea = -0.3 * maxGenHeight;
+
+        
+
+        Color[] color = new Color[allVerts.Length];
+
+
+        for (int i =0; i<allVerts.Length; i++)
+        {
+            float currentHeight = allVerts[i].y;
+
+            if (currentHeight >= snowLine)
+            {
+                color[i] = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+            }
+            else if (currentHeight >= rockLine && currentHeight < snowLine)
+            {
+                color[i] = Color.gray;
+            }else if(currentHeight >= grassLine && currentHeight < rockLine)
+            {
+                color[i] = new Color(0.0f, 0.45f, 0.0f, 1.0f);
+            }else if(currentHeight >= sandLine && currentHeight < grassLine)
+            {
+                color[i] = new Color(0.5f, 0.5f, 0.0f, 1.0f);
+            }
+            else if(currentHeight >= shallowSea && currentHeight < sandLine)
+            {
+                color[i] = new Color(0.2f, 0.5f, 0.8f, 1.0f);
+            }else if(currentHeight < shallowSea)
+            {
+                color[i] = Color.blue;
+            }
+        }
+     
         m.vertices = allVerts;
-        m.uv = uvs;
         m.triangles = triangles;
+       // m.uv = uvs;
+
+        m.colors = color;
         m.RecalculateBounds();
         m.RecalculateNormals();
-
+       
+        collider = GetComponent<MeshCollider>();
+        collider.sharedMesh = m;
         return m;
 
     }

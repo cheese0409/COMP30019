@@ -11,7 +11,25 @@ public class CameraControl : MonoBehaviour
     public float mouse = 5.0f;
     public float keyboard = 0.1f;
     public float mouseWheel = 10f;
+    public float boundary;
 
+    public Rigidbody rb;
+
+
+    private void Start()
+    {
+        GameObject terrainObj = GameObject.Find("LandScape");
+        DiamondSquare terrain = terrainObj.GetComponent<DiamondSquare>();
+
+        boundary = terrain.LandSize/2;
+        rb = GetComponent<Rigidbody>();
+
+        transform.position = new Vector3(boundary, 3 * terrain.maxHeight, boundary);
+        transform.LookAt(new Vector3(10, 0, 0));
+
+
+
+    }
     private void Update()
     {
         // AWSD control
