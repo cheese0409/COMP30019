@@ -18,10 +18,14 @@ public class DiamondSquare : MonoBehaviour
         landscape.mesh = this.createLandscape();
 
         MeshRenderer renderer = this.gameObject.AddComponent<MeshRenderer>();
+        renderer.material= this.material;
         renderer.material.shader = this.shader;
-        //renderer.material.color = 
-        createLandscape();
+
+        MeshCollider mc = this.gameObject.GetComponent<MeshCollider>();
+        mc.sharedMesh = landscape.mesh;
     }
+
+
 
     Mesh createLandscape(){
         int numVerts = nPoints * nPoints;
@@ -48,9 +52,9 @@ public class DiamondSquare : MonoBehaviour
 
                   triangles[triIndex] = top;
                   triangles[triIndex+1] = top + 1;
-                  triangles[triIndex+2] = bot;
+                  triangles[triIndex+2] = bot + 1;
 
-                  triangles[triIndex+3] = top + 1;
+                  triangles[triIndex+3] = top;
                   triangles[triIndex+4] = bot + 1;
                   triangles[triIndex+5] = bot;
 
@@ -80,8 +84,8 @@ public class DiamondSquare : MonoBehaviour
                   int bot = (currentline+squareSize)*nPoints + currentcol;
                   int mid = (int)((currentline+half)*nPoints)+ (int)(currentcol + half);
 
-                  diamond(top, bot, mid, squareSize, maxHeight);
-                  square(top, bot, mid, squareSize, maxHeight);
+                  diamond(top, bot, mid, squareSize, 0.7f*maxHeight);
+                  square(top, bot, mid, squareSize, 0.7f*maxHeight);
 
                   currentcol += squareSize;
 
@@ -94,6 +98,8 @@ public class DiamondSquare : MonoBehaviour
             maxHeight *= 0.5f;
 
         }
+
+
 
 
         m.vertices = allVerts;

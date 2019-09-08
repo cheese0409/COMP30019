@@ -24,10 +24,40 @@ public class CameraControl : MonoBehaviour
             transform.Translate(0, 0, Input.GetAxis("Vertical") * keyboard);
         }
 
+        checkOutOfBound();
+
         //Mouse control
         float mouseX = Input.GetAxis("Mouse X") * mouse;
         float mouseY = Input.GetAxis("Mouse Y") * mouse;
         Vector3 angle = new Vector3(mouseY, -mouseX, 0);
         this.transform.eulerAngles -= angle;
+    }
+
+    // stop camera moving when hitting the Rigidbody
+    void FixedUpdate(){
+      Vector3 v = new Vector3(0, 0, 0);
+      this.gameObject.GetComponent<Rigidbody>().velocity = v;
+    }
+
+    void checkOutOfBound(){
+      if (this.transform.localPosition.x < -20){
+        this.transform.localPosition = new Vector3(-20.0f, transform.localPosition.y, transform.localPosition.z);
+      }
+
+      if(this.transform.localPosition.x > 20){
+        this.transform.localPosition = new Vector3(20.0f, transform.localPosition.y, transform.localPosition.z);
+      }
+
+      if(this.transform.localPosition.z > 20){
+        this.transform.localPosition = new Vector3(transform.localPosition.x, transform.localPosition.y, 20.0f);
+      }
+
+      if(this.transform.localPosition.z < -20){
+        this.transform.localPosition = new Vector3(transform.localPosition.x, transform.localPosition.y, -20.0f);
+      }
+
+      if(this.transform.localPosition.y > 30){
+        this.transform.localPosition = new Vector3(transform.localPosition.x, 30.0f, transform.localPosition.z);
+      }
     }
 }
