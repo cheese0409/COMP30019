@@ -10,8 +10,13 @@ public class DiamondSquare : MonoBehaviour
     private float maxGenHeight;
     public Shader shader;
     public Material material;
-    MeshCollider collider;
-    private Vector3[] allVerts;
+    private float currMaxHeight;
+
+
+  
+    public PointLight pointLight;
+
+    Vector3[] allVerts;
 
     void Start()
     {
@@ -20,15 +25,24 @@ public class DiamondSquare : MonoBehaviour
         landscape.mesh = this.createLandscape();
 
         MeshRenderer renderer = this.gameObject.AddComponent<MeshRenderer>();
+        renderer.material= this.material;
         renderer.material.shader = this.shader;
-        //renderer.material.color = 
-       // createLandscape();
+
+        MeshCollider mc = this.gameObject.GetComponent<MeshCollider>();
+        mc.sharedMesh = landscape.mesh;
+
+        currMaxHeight = -maxHeight;
+    }
+    void Update()
+    {
+        // Get renderer component (in order to pass params to shader)
+        MeshRenderer renderer = this.gameObject.GetComponent<MeshRenderer>();
+
+        // Pass updated light positions to shader
+        //renderer.material.SetColor("_PointLightColor", this.pointLight.color);
+        //renderer.material.SetVector("_PointLightPosition", this.pointLight.GetWorldPosition());
     }
 
-    private void Update()
-    {
-        MeshRenderer renderer = this.gameObject.GetComponent<MeshRenderer>();
-    }
 
     Mesh createLandscape(){
         int numVerts = nPoints * nPoints;
@@ -56,9 +70,9 @@ public class DiamondSquare : MonoBehaviour
 
                   triangles[triIndex] = top;
                   triangles[triIndex+1] = top + 1;
-                  triangles[triIndex+2] = bot;
+                  triangles[triIndex+2] = bot + 1;
 
-                  triangles[triIndex+3] = top + 1;
+                  triangles[triIndex+3] = top;
                   triangles[triIndex+4] = bot + 1;
                   triangles[triIndex+5] = bot;
 
@@ -88,8 +102,8 @@ public class DiamondSquare : MonoBehaviour
                   int bot = (currentline+squareSize)*nPoints + currentcol;
                   int mid = (int)((currentline+half)*nPoints)+ (int)(currentcol + half);
 
-                  diamond(top, bot, mid, squareSize, maxHeight);
-                  square(top, bot, mid, squareSize, maxHeight);
+                  diamond(top, bot, mid, squareSize, 0.7f*maxHeight);
+                  square(top, bot, mid, squareSize, 0.7f*maxHeight);
 
                   currentcol += squareSize;
 
@@ -102,20 +116,57 @@ public class DiamondSquare : MonoBehaviour
             maxHeight *= 0.5f;
 
         }
-
-        for(int i = 0; i<allVerts.Length; i++)
+        // find the max height
+        for ( int i=0; i< numVerts; i++)
         {
-            if (allVerts[i].y > maxGenHeight)
+            if(allVerts[i].y > currMaxHeight)
             {
-                maxGenHeight = allVerts[i].y;
+                currMaxHeight = allVerts[i].y;
             }
         }
 
-        double snowLine = 0.8 * maxGenHeight;
-        double rockLine = 0.6 * maxGenHeight;
-        double grassLine = 0.3 * maxGenHeight;
-        double sandLine = -0.1 * maxGenHeight;
-        double shallowSea = -0.3 * maxGenHeight;
+        Color[] terrainColor = new Color[numVerts];
+
+        for (int i = 0; i < allVerts.Length; i++)
+        {
+            if (allVerts[i].y > currMaxHeight * 0.75)
+            {
+
+                terrainColor[i] = new Color(1.0f, 1.0f, 1.0f, 1.0f); //snow
+
+            }
+            else if (allVerts[i].y > currMaxHeight * 0.55 && allVerts[i].y < currMaxHeight * 0.75)
+            {
+
+                terrainColor[i] = Color.grey; //rock
+
+            }
+            else if (allVerts[i].y > -currMaxHeight * 0.1 && allVerts[i].y < currMaxHeight * 0.55)
+            {
+
+                terrainColor[i] = new Color(0.0f, 0.45f, 0.0f, 1.0f); // grassland
+
+            }
+            else if (allVerts[i].y > -currMaxHeight * 0.2 && allVerts[i].y < -currMaxHeight * 0.1)
+            {
+
+                terrainColor[i] = new Color(0.5f, 0.5f, 0.0f, 1.0f); // beach
+
+            }
+            else if (allVerts[i].y > -currMaxHeight * 0.3 && allVerts[i].y < -currMaxHeight * 0.2)
+            {
+
+                terrainColor[i] = new Color(0.2f, 0.5f, 0.8f, 1.0f); //shallow water
+
+            }
+            else if (allVerts[i].y < -currMaxHeight * 0.3)
+            {
+
+                terrainColor[i] = Color.blue; //ocean
+
+            }
+
+        }
 
         
 
@@ -150,6 +201,8 @@ public class DiamondSquare : MonoBehaviour
         }
      
         m.vertices = allVerts;
+        m.uv = uvs;
+        m.colors = terrainColor;
         m.triangles = triangles;
        // m.uv = uvs;
 
@@ -157,8 +210,6 @@ public class DiamondSquare : MonoBehaviour
         m.RecalculateBounds();
         m.RecalculateNormals();
        
-        collider = GetComponent<MeshCollider>();
-        collider.sharedMesh = m;
         return m;
 
     }
