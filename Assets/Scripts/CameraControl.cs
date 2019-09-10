@@ -8,13 +8,45 @@ using UnityEngine;
 
 public class CameraControl : MonoBehaviour
 {
-    public float mouse = 5.0f;
-    public float keyboard = 0.1f;
-    public float mouseWheel = 10f;
+    private float mouseSpeed = 0.1f;
+    private float keyboard = 0.1f;
+    private Vector3 mousePos;
+   
+
+    private void Start()
+    {
+        GameObject terrain = GameObject.Find("LandScape");
+        DiamondSquare script = terrain.GetComponent<DiamondSquare>();
+        transform.position = new Vector3(0, script.maxHeight*2, script.LandSize / 2);
+        transform.LookAt(new Vector3(10, 0, 0));
+        mousePos = Input.mousePosition;
+    }
 
     private void Update()
     {
-        // AWSD control
+        checkOutOfBound();
+        keyboardControl();
+        cameraRotate();
+        
+    }
+
+
+    void cameraRotate()
+    {
+        mousePos = Input.mousePosition - mousePos;
+        mousePos = new Vector3(-mousePos.y * mouseSpeed, mouseSpeed * mousePos.x, 0);
+        mousePos = new Vector3(transform.eulerAngles.x + mousePos.x, transform.eulerAngles.y + mousePos.y, 0);
+
+        if (mousePos.x > 80 && mousePos.x < 90)
+        {
+            mousePos.x = 80;
+        }
+        transform.eulerAngles = mousePos;
+        mousePos = Input.mousePosition;
+    }
+
+    void keyboardControl()
+    {
         if (Input.GetAxis("Horizontal") != 0)
         {
             transform.Translate(Input.GetAxis("Horizontal") * keyboard, 0, 0);
@@ -23,14 +55,6 @@ public class CameraControl : MonoBehaviour
         {
             transform.Translate(0, 0, Input.GetAxis("Vertical") * keyboard);
         }
-
-        checkOutOfBound();
-
-        //Mouse control
-        float mouseX = Input.GetAxis("Mouse X") * mouse;
-        float mouseY = Input.GetAxis("Mouse Y") * mouse;
-        Vector3 angle = new Vector3(mouseY, -mouseX, 0);
-        this.transform.eulerAngles -= angle;
     }
 
     // stop camera moving when hitting the Rigidbody

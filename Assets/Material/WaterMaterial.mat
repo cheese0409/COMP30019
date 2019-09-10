@@ -86,7 +86,7 @@ Material:
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _Speed: 58
-    - _SpeedX: 0.26
+    - _SpeedX: 2.4
     - _SpeedY: 0.79
     - _SrcBlend: 1
     - _Strength: 0.288

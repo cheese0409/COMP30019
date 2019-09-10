@@ -8,37 +8,31 @@ public class DiamondSquare : MonoBehaviour
     public float LandSize;
     public float maxHeight;
     public Shader shader;
-    public Material material;
     private float currMaxHeight;
-
-
-  
-    public PointLight pointLight;
-
-    Vector3[] allVerts;
+    public PointLight PointLight;
+    MeshCollider mc;
+    private Vector3[] allVerts;
 
     void Start()
     {
         MeshFilter landscape = this.gameObject.AddComponent<MeshFilter>();
         landscape.mesh = this.createLandscape();
 
-        MeshRenderer renderer = this.gameObject.AddComponent<MeshRenderer>();
-        renderer.material= this.material;
-        renderer.material.shader = this.shader;
-
-        MeshCollider mc = this.gameObject.GetComponent<MeshCollider>();
+        mc = this.gameObject.GetComponent<MeshCollider>();
         mc.sharedMesh = landscape.mesh;
 
-        currMaxHeight = -maxHeight;
+        MeshRenderer lanscapeRenderer = this.gameObject.AddComponent<MeshRenderer>();
+        lanscapeRenderer.material.shader = shader;
     }
+
     void Update()
     {
         // Get renderer component (in order to pass params to shader)
         MeshRenderer renderer = this.gameObject.GetComponent<MeshRenderer>();
 
         // Pass updated light positions to shader
-        //renderer.material.SetColor("_PointLightColor", this.pointLight.color);
-        //renderer.material.SetVector("_PointLightPosition", this.pointLight.GetWorldPosition());
+        renderer.material.SetColor("_PointLightColor", this.PointLight.color);
+        renderer.material.SetVector("_PointLightPosition", this.PointLight.getWorldPosition());
     }
 
 
@@ -47,6 +41,7 @@ public class DiamondSquare : MonoBehaviour
         int numGap = this.nPoints - 1;
         float halfLength = 0.5f * LandSize;
         float step = LandSize / numGap;
+        float varHeight = maxHeight;
         int triIndex = 0;
 
         Mesh m = new Mesh();
@@ -79,10 +74,10 @@ public class DiamondSquare : MonoBehaviour
         }
 
         //initialize the height for four corner points
-        allVerts[0].y = Random.Range(-maxHeight,maxHeight);
-        allVerts[numGap].y = Random.Range(-maxHeight,maxHeight);
-        allVerts[allVerts.Length-1].y = Random.Range(-maxHeight,maxHeight);
-        allVerts[allVerts.Length-1-numGap].y = Random.Range(-maxHeight,maxHeight);
+        allVerts[0].y = Random.Range(-varHeight,varHeight);
+        allVerts[numGap].y = Random.Range(-varHeight,varHeight);
+        allVerts[allVerts.Length-1].y = Random.Range(-varHeight,varHeight);
+        allVerts[allVerts.Length-1-numGap].y = Random.Range(-varHeight,varHeight);
 
         //splitInto how many Squares
         int splitInto = 1;
@@ -99,8 +94,8 @@ public class DiamondSquare : MonoBehaviour
                   int bot = (currentline+squareSize)*nPoints + currentcol;
                   int mid = (int)((currentline+half)*nPoints)+ (int)(currentcol + half);
 
-                  diamond(top, bot, mid, squareSize, 0.7f*maxHeight);
-                  square(top, bot, mid, squareSize, 0.7f*maxHeight);
+                  diamond(top, bot, mid, squareSize, 0.7f*varHeight);
+                  square(top, bot, mid, squareSize, 0.7f*varHeight);
 
                   currentcol += squareSize;
 
@@ -110,9 +105,11 @@ public class DiamondSquare : MonoBehaviour
             }
             splitInto *= 2;
             squareSize /= 2;
-            maxHeight *= 0.5f;
+            varHeight *= 0.5f;
 
         }
+
+        currMaxHeight = -maxHeight;
         // find the max height
         for ( int i=0; i< numVerts; i++)
         {
@@ -122,7 +119,13 @@ public class DiamondSquare : MonoBehaviour
             }
         }
 
+        Debug.Log(currMaxHeight);
+
         Color[] terrainColor = new Color[numVerts];
+
+        Debug.Log(terrainColor.Length);
+
+
 
         for (int i = 0; i < allVerts.Length; i++)
         {
@@ -162,13 +165,14 @@ public class DiamondSquare : MonoBehaviour
                 terrainColor[i] = Color.blue; //ocean
 
             }
+            //Debug.Log(terrainColor[i]);
 
         }
 
         m.vertices = allVerts;
+        m.triangles = triangles;
         m.uv = uvs;
         m.colors = terrainColor;
-        m.triangles = triangles;
         m.RecalculateBounds();
         m.RecalculateNormals();
        

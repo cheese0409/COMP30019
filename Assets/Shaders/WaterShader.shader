@@ -3,11 +3,11 @@ Shader "Unlit/NoiseWater"
 {
 	Properties
 	{
-		_MainTex("Base (RGB)", 2D) = "white" {}//水的纹理材质
-		_NoiseTex("Noise Map", 2D) = "bump" {}//噪声纹理
-		_Mitigation("Mitigation", Range(1, 50)) = 20//用于控制映射图像的扭曲程度
-		_SpeedX("Speed X", Range(0, 5)) = 1//控制纹理在X轴上的速度
-		_SpeedY("Speed Y", Range(0, 5)) = 1//控制纹理在Y轴上的速度
+		_MainTex("Base (RGB)", 2D) = "white" {}
+		_NoiseTex("Noise Map", 2D) = "bump" {}
+		_Mitigation("Mitigation", Range(1, 50)) = 20
+		_SpeedX("Speed X", Range(0, 5)) = 1
+		_SpeedY("Speed Y", Range(0, 5)) = 1
 
 		_Color("Color", Color) = (0,0,0,1)
 		_Strength("Strength", Range(0,2)) = 1.0
@@ -68,13 +68,13 @@ Shader "Unlit/NoiseWater"
 			{
 				float2 uv = i.uv;
  
-				float2 speed = (_SpeedX, _SpeedY); //纹理的平移速度
+				float2 speed = (_SpeedX, _SpeedY); 
  
-				fixed noise = tex2D(_NoiseTex, uv).r;//获取噪声纹理的值，由于噪声纹理是一张灰度图，所以使用哪个值都可以
+				fixed noise = tex2D(_NoiseTex, uv).r;
  
-				noise = noise / _Mitigation;//当噪声值除以一个数，该数值越大就越接近0，纹理扭曲的程度就越小
+				noise = noise / _Mitigation;
 				
-				uv += noise* sin(_Time.y * speed);//_Time是一个float4类型，xyzw分别表示t/20,t,t*2,t*3，当前我们选取正常速度也就y分量，通过周期函数sin()来控制其变化
+				uv += noise* sin(_Time.y * speed);
 				
 				return tex2D(_MainTex, uv);
 			}
