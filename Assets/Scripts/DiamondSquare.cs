@@ -9,6 +9,11 @@ public class DiamondSquare : MonoBehaviour
     public float maxHeight;
     public Shader shader;
     public Material material;
+    private float currMaxHeight;
+
+
+  
+    public PointLight pointLight;
 
     Vector3[] allVerts;
 
@@ -23,8 +28,18 @@ public class DiamondSquare : MonoBehaviour
 
         MeshCollider mc = this.gameObject.GetComponent<MeshCollider>();
         mc.sharedMesh = landscape.mesh;
-    }
 
+        currMaxHeight = -maxHeight;
+    }
+    void Update()
+    {
+        // Get renderer component (in order to pass params to shader)
+        MeshRenderer renderer = this.gameObject.GetComponent<MeshRenderer>();
+
+        // Pass updated light positions to shader
+        //renderer.material.SetColor("_PointLightColor", this.pointLight.color);
+        //renderer.material.SetVector("_PointLightPosition", this.pointLight.GetWorldPosition());
+    }
 
 
     Mesh createLandscape(){
@@ -98,16 +113,65 @@ public class DiamondSquare : MonoBehaviour
             maxHeight *= 0.5f;
 
         }
+        // find the max height
+        for ( int i=0; i< numVerts; i++)
+        {
+            if(allVerts[i].y > currMaxHeight)
+            {
+                currMaxHeight = allVerts[i].y;
+            }
+        }
 
+        Color[] terrainColor = new Color[numVerts];
 
+        for (int i = 0; i < allVerts.Length; i++)
+        {
+            if (allVerts[i].y > currMaxHeight * 0.75)
+            {
 
+                terrainColor[i] = new Color(1.0f, 1.0f, 1.0f, 1.0f); //snow
+
+            }
+            else if (allVerts[i].y > currMaxHeight * 0.55 && allVerts[i].y < currMaxHeight * 0.75)
+            {
+
+                terrainColor[i] = Color.grey; //rock
+
+            }
+            else if (allVerts[i].y > -currMaxHeight * 0.1 && allVerts[i].y < currMaxHeight * 0.55)
+            {
+
+                terrainColor[i] = new Color(0.0f, 0.45f, 0.0f, 1.0f); // grassland
+
+            }
+            else if (allVerts[i].y > -currMaxHeight * 0.2 && allVerts[i].y < -currMaxHeight * 0.1)
+            {
+
+                terrainColor[i] = new Color(0.5f, 0.5f, 0.0f, 1.0f); // beach
+
+            }
+            else if (allVerts[i].y > -currMaxHeight * 0.3 && allVerts[i].y < -currMaxHeight * 0.2)
+            {
+
+                terrainColor[i] = new Color(0.2f, 0.5f, 0.8f, 1.0f); //shallow water
+
+            }
+            else if (allVerts[i].y < -currMaxHeight * 0.3)
+            {
+
+                terrainColor[i] = Color.blue; //ocean
+
+            }
+
+        }
 
         m.vertices = allVerts;
         m.uv = uvs;
+        m.colors = terrainColor;
         m.triangles = triangles;
         m.RecalculateBounds();
         m.RecalculateNormals();
-
+       
         return m;
 
     }
