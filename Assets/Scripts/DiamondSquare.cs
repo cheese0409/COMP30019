@@ -144,7 +144,7 @@ public class DiamondSquare : MonoBehaviour
             else if (allVerts[i].y > -currMaxHeight * 0.1 && allVerts[i].y < currMaxHeight * 0.55)
             {
 
-                terrainColor[i] = new Color(0.0f, 0.45f, 0.0f, 1.0f); // grassland
+                terrainColor[i] = new Color(30/255f, 130/255f, 76/255f, 1.0f); // grasslandrgba(30/255, 130/255, 76/255, 1)
 
             }
             else if (allVerts[i].y > -currMaxHeight * 0.2 && allVerts[i].y < -currMaxHeight * 0.1)
@@ -162,7 +162,7 @@ public class DiamondSquare : MonoBehaviour
             else if (allVerts[i].y < -currMaxHeight * 0.3)
             {
 
-                terrainColor[i] = Color.blue; //ocean
+                terrainColor[i] = new Color(76/255f,70/255f,50/255,1.0f); //ocean
 
             }
             //Debug.Log(terrainColor[i]);
