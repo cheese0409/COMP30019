@@ -8,6 +8,7 @@ public class DiamondSquare : MonoBehaviour
     public float LandSize;
     public float maxHeight;
     public Shader shader;
+    public float currMinHeight;
     private float currMaxHeight;
     public PointLight PointLight;
     MeshCollider mc;
@@ -110,12 +111,17 @@ public class DiamondSquare : MonoBehaviour
         }
 
         currMaxHeight = -maxHeight;
+        currMinHeight = maxHeight;
         // find the max height
         for ( int i=0; i< numVerts; i++)
         {
             if(allVerts[i].y > currMaxHeight)
             {
                 currMaxHeight = allVerts[i].y;
+            }
+            if (allVerts[i].y < currMinHeight)
+            {
+                currMinHeight = allVerts[i].y;
             }
         }
 
