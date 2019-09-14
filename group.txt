@@ -1,3 +1,4 @@
-Name,StudentID,contribution
-CHENG WANG,825299,Phong illumination of mountain and modification of colors.
-Yuefan Wu,921008,diamond square algorithm implemented, adjust the camera on collision,apply phong illumination for the water.
+## Name, StudentID, Contribution
+- CHENG WANG, 825299, Phong illumination of mountain and modification of colors.
+- Yuefan Wu, 921008, Diamond square algorithm implemented, adjust the camera on collision, apply phong illumination for the water.
+- Dongdong Yu, 966457, Camera control, water vertex shader, initial terrain styling and sun rotation
