@@ -1,2 +1,2 @@
-Name,StudentID
-CHENG WANG,825299
+Name,StudentID,contribution
+CHENG WANG,825299,Phong illumination of mountain and modification of colors.
