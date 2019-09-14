@@ -17,7 +17,7 @@ public class PointLight : MonoBehaviour
     }
 
     // Update is called once per frame
-    public Vector3 getWorldPosition()
+    public Vector3 GetWorldPosition()
     {
         return this.transform.position;
     }
