@@ -1,4 +1,8 @@
-﻿using System.Collections;
+//general ideas from https://www.youtube.com/watch?v=1HV8GbFnCik
+// modify and apply on for this particular problem
+// also made use of COMP30019 multiple workshops' code
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,7 +13,7 @@ public class DiamondSquare : MonoBehaviour
     public float maxHeight;
     public Shader shader;
     public float currMinHeight;
-    private float currMaxHeight;
+    public float currMaxHeight;
     public PointLight PointLight;
     MeshCollider mc;
     private Vector3[] allVerts;
@@ -33,7 +37,7 @@ public class DiamondSquare : MonoBehaviour
 
         // Pass updated light positions to shader
         renderer.material.SetColor("_PointLightColor", this.PointLight.color);
-        renderer.material.SetVector("_PointLightPosition", this.PointLight.getWorldPosition());
+        renderer.material.SetVector("_PointLightPosition", this.PointLight.GetWorldPosition());
     }
 
 
@@ -51,12 +55,14 @@ public class DiamondSquare : MonoBehaviour
         Vector2[] uvs = new Vector2[numVerts];
         int[] triangles = new int [numGap*numGap*6];
 
-
+        //create triangles
         for (int i=0; i < nPoints; i++){
             for (int j=0; j < nPoints; j++){
                 allVerts[nPoints*i+j] = new Vector3 (step*j-halfLength, 0.0f, halfLength-step*i);
                 uvs[i*nPoints+j] = new Vector2 ((float)i/numGap, (float)j/numGap);
 
+                //one square needs two triangles
+                //and each triangle needs three vertices
                 if (i<numGap && j<numGap){
                   int top = i*nPoints + j;
                   int bot = (i+1)*nPoints +j;
@@ -74,7 +80,7 @@ public class DiamondSquare : MonoBehaviour
             }
         }
 
-        //initialize the height for four corner points
+        //initialize the height for four corner points randomly
         allVerts[0].y = Random.Range(-varHeight,varHeight);
         allVerts[numGap].y = Random.Range(-varHeight,varHeight);
         allVerts[allVerts.Length-1].y = Random.Range(-varHeight,varHeight);
@@ -84,6 +90,7 @@ public class DiamondSquare : MonoBehaviour
         int splitInto = 1;
         int squareSize = numGap;
 
+        //DiamondSquare algorithm Implementation
         for (int i = 0;  i<(int)Mathf.Log(numGap,2); i++){
             int currentline = 0;
             for (int j = 0; j<splitInto; j++){
@@ -125,14 +132,13 @@ public class DiamondSquare : MonoBehaviour
             }
         }
 
-        Debug.Log(currMaxHeight);
 
         Color[] terrainColor = new Color[numVerts];
 
-        Debug.Log(terrainColor.Length);
 
 
 
+        //adding colors
         for (int i = 0; i < allVerts.Length; i++)
         {
             if (allVerts[i].y > currMaxHeight * 0.75)
@@ -162,13 +168,13 @@ public class DiamondSquare : MonoBehaviour
             else if (allVerts[i].y > -currMaxHeight * 0.3 && allVerts[i].y < -currMaxHeight * 0.2)
             {
 
-                terrainColor[i] = new Color(0.2f, 0.5f, 0.8f, 1.0f); //shallow water
+                terrainColor[i] = new Color(0.5f, 0.5f, 0.0f, 1.0f); //beach
 
             }
             else if (allVerts[i].y < -currMaxHeight * 0.3)
             {
 
-                terrainColor[i] = new Color(76/255f,70/255f,50/255,1.0f); //ocean
+                terrainColor[i] = new Color(0.5f, 0.5f, 0.0f, 1.0f); //beach
 
             }
             //Debug.Log(terrainColor[i]);
@@ -181,15 +187,17 @@ public class DiamondSquare : MonoBehaviour
         m.colors = terrainColor;
         m.RecalculateBounds();
         m.RecalculateNormals();
-       
+
         return m;
 
     }
 
+    // diamond steps
     void diamond(int top, int bot, int mid, int size, float noise ){
         allVerts[mid].y = (allVerts[top].y + allVerts[top+size].y + allVerts[bot+size].y + allVerts[bot].y)*0.25f + Random.Range(-noise, noise);
     }
 
+    // square steps
     void square(int top, int bot, int mid, int size, float noise){
         int half = (int)(size*0.5f);
 
