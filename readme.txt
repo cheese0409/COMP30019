@@ -1,7 +1,7 @@
 Description:
-To create the terrain, we used diamond-square algorithm, starting from initializing heights for four corners and for each diamond and square steps, we calculated the average height from four points and added a random noise in order to make the terrain realistic. In addition, we set different colors according to the height of the mountains. To make it realistic under the sunlights, we applied ambient and diffuse reflection on the hill.
+To create the terrain, we used diamond-square algorithm, starting from initializing heights for four corners and for each diamond and square steps, we calculated the average height from four points and added a random noise in order to make the terrain realistic. In addition, we set different colors to different altitudes of the mountain.Therefore, there is snow, rock, woods,beach and riverbed.   To make it realistic under the sunlights, we only applied ambient and diffuse reflection on the hill in mountain's shader.
 
-In the water parts, we represented the water using a simple plane that go through the mountain. In the water shader, we applied wave effect and performed ambient, diffuse and specular reflections on the water.
+In the water parts, we represented the water using a simple plane that go through the mountain. In the water shader, we applied wave effect and performed ambient, diffuse and specular reflections on the water. therefore, there is reflection of the sun in the water.
 
 
 
