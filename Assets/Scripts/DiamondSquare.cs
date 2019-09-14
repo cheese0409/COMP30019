@@ -1,10 +1,14 @@
-//general ideas from https://www.youtube.com/watch?v=1HV8GbFnCik
-// modify and apply on for this particular problem
-// also made use of COMP30019 multiple workshops' code
+// General ideas from https://www.youtube.com/watch?v=1HV8GbFnCik
+// Modify and apply on for this particular problem
+// Also made use of COMP30019 multiple workshops' code
 
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
+/// <summary>
+/// Diamond Square Script
+/// </summary>
 
 public class DiamondSquare : MonoBehaviour
 {
@@ -20,12 +24,14 @@ public class DiamondSquare : MonoBehaviour
 
     void Start()
     {
+        // Create MeshFilter
         MeshFilter landscape = this.gameObject.AddComponent<MeshFilter>();
         landscape.mesh = this.createLandscape();
 
         mc = this.gameObject.GetComponent<MeshCollider>();
         mc.sharedMesh = landscape.mesh;
 
+        // Apply the shader
         MeshRenderer lanscapeRenderer = this.gameObject.AddComponent<MeshRenderer>();
         lanscapeRenderer.material.shader = shader;
     }
@@ -119,7 +125,8 @@ public class DiamondSquare : MonoBehaviour
 
         currMaxHeight = -maxHeight;
         currMinHeight = maxHeight;
-        // find the max height
+       
+        // find the current max height and min height
         for ( int i=0; i< numVerts; i++)
         {
             if(allVerts[i].y > currMaxHeight)
@@ -132,13 +139,9 @@ public class DiamondSquare : MonoBehaviour
             }
         }
 
-
         Color[] terrainColor = new Color[numVerts];
 
-
-
-
-        //adding colors
+        // Assign colors
         for (int i = 0; i < allVerts.Length; i++)
         {
             if (allVerts[i].y > currMaxHeight * 0.75)
@@ -177,10 +180,9 @@ public class DiamondSquare : MonoBehaviour
                 terrainColor[i] = new Color(0.5f, 0.5f, 0.0f, 1.0f); //beach
 
             }
-            //Debug.Log(terrainColor[i]);
-
         }
 
+        // Assign to the mesh
         m.vertices = allVerts;
         m.triangles = triangles;
         m.uv = uvs;
@@ -192,12 +194,12 @@ public class DiamondSquare : MonoBehaviour
 
     }
 
-    // diamond steps
+    // Diamond steps
     void diamond(int top, int bot, int mid, int size, float noise ){
         allVerts[mid].y = (allVerts[top].y + allVerts[top+size].y + allVerts[bot+size].y + allVerts[bot].y)*0.25f + Random.Range(-noise, noise);
     }
 
-    // square steps
+    // Square steps
     void square(int top, int bot, int mid, int size, float noise){
         int half = (int)(size*0.5f);
 

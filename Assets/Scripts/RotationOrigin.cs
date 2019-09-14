@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// Refer to Lab 2 Code XAxisSpin.cs
 public class RotationOrigin : MonoBehaviour
 {
     public float speed;

@@ -1,3 +1,7 @@
+
+// Lab Code and Reference
+// Basic Ideas From: https://www.youtube.com/watch?v=lWCPFwxZpVg
+//
 // Original Cg/HLSL code stub copyright (c) 2010-2012 SharpDX - Alexandre Mutel
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -72,11 +76,10 @@ Shader "Unlit/WaterShader"
 				vertexOutput o;
 				float4 worldPos = mul(unity_ObjectToWorld, IN.vertex);
 
+				// Use cosine function to sinmulate wave motion
 				float displacement = (cos(worldPos.y)+cos(worldPos.x + (_Speed*_Time)));
 				worldPos.y = worldPos.y + (displacement * _Strength);
 				o.pos = mul(UNITY_MATRIX_VP, worldPos);
-
-
 				float4 worldVertex = mul(unity_ObjectToWorld, IN.vertex);
 				float3 worldNormal = normalize(mul(transpose((float3x3)unity_WorldToObject), IN.normal.xyz));
 
