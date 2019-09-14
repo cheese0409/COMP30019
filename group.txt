@@ -1,2 +1,3 @@
 Name,StudentID,contribution
 CHENG WANG,825299,Phong illumination of mountain and modification of colors.
+Yuefan Wu,921008,diamond square algorithm implemented, adjust the camera on collision,apply phong illumination for the water.
