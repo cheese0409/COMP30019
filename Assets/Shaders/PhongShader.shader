@@ -102,12 +102,9 @@ Shader "Unlit/PhongShader"
                 float3 dif = fAtt * _PointLightColor.rgb * Kd * v.color.rgb * saturate(LdotN);
 
                 // Calculate specular reflections
-                float Ks = 1;
+                float Ks = 0.0;
                 float specN = 5; // Values>>1 give tighter highlights
                 float3 V = normalize(_WorldSpaceCameraPos - v.worldVertex.xyz);
-                // Using classic reflection calculation:
-                //float3 R = normalize((2.0 * LdotN * interpNormal) - L);
-                //float3 spe = fAtt * _PointLightColor.rgb * Ks * pow(saturate(dot(V, R)), specN);
                 // Using Blinn-Phong approximation:
                 specN = 25; // We usually need a higher specular power when using Blinn-Phong
                 float3 H = normalize(V + L);
@@ -115,7 +112,7 @@ Shader "Unlit/PhongShader"
 
                 // Combine Phong illumination model components
                 float4 returnColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
-                returnColor.rgb = amb.rgb + dif.rgb;//+ spe.rgb
+				returnColor.rgb = amb.rgb + dif.rgb + spe.rgb;
                 returnColor.a = v.color.a;
 
                 return returnColor;

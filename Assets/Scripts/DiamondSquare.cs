@@ -5,6 +5,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 /// <summary>
 /// Diamond Square Script
@@ -15,6 +16,8 @@ public class DiamondSquare : MonoBehaviour
     public int nPoints;
     public float LandSize;
     public float maxHeight;
+    public float waterLevel; // midpoint of landscape
+    public float mountainHeight;//height of mountain above waterlevel
     public Shader shader;
     public float currMinHeight;
     public float currMaxHeight;
@@ -87,10 +90,10 @@ public class DiamondSquare : MonoBehaviour
         }
 
         //initialize the height for four corner points randomly
-        allVerts[0].y = Random.Range(-varHeight,varHeight);
-        allVerts[numGap].y = Random.Range(-varHeight,varHeight);
-        allVerts[allVerts.Length-1].y = Random.Range(-varHeight,varHeight);
-        allVerts[allVerts.Length-1-numGap].y = Random.Range(-varHeight,varHeight);
+        allVerts[0].y = UnityEngine.Random.Range(-varHeight,varHeight);
+        allVerts[numGap].y = UnityEngine.Random.Range(-varHeight,varHeight);
+        allVerts[allVerts.Length-1].y = UnityEngine.Random.Range(-varHeight,varHeight);
+        allVerts[allVerts.Length-1-numGap].y = UnityEngine.Random.Range(-varHeight,varHeight);
 
         //splitInto how many Squares
         int splitInto = 1;
@@ -141,43 +144,41 @@ public class DiamondSquare : MonoBehaviour
 
         Color[] terrainColor = new Color[numVerts];
 
-        // Assign colors
+
+        mountainHeight = (Math.Abs(currMaxHeight) + Math.Abs(currMinHeight))/2;
+        waterLevel = (currMaxHeight + currMinHeight) / 2;
+
         for (int i = 0; i < allVerts.Length; i++)
         {
-            if (allVerts[i].y > currMaxHeight * 0.75)
+            if (allVerts[i].y > (waterLevel + 0.82 * mountainHeight))
             {
 
-                terrainColor[i] = new Color(1.0f, 1.0f, 1.0f, 1.0f); //snow
+                terrainColor[i] = new Color(250/255f, 250/255f, 250/255f, 1.0f); //snow
 
             }
-            else if (allVerts[i].y > currMaxHeight * 0.55 && allVerts[i].y < currMaxHeight * 0.75)
+            else if (allVerts[i].y > (waterLevel + 0.6 * mountainHeight) && allVerts[i].y < (waterLevel + 0.82 * mountainHeight))
             {
 
-                terrainColor[i] = Color.grey; //rock
+                terrainColor[i] = new Color(128/255f, 132/255f, 135/255f, 1.0f); //rock (128,132,135)
 
             }
-            else if (allVerts[i].y > -currMaxHeight * 0.1 && allVerts[i].y < currMaxHeight * 0.55)
+            else if (allVerts[i].y < (waterLevel + 0.6 * mountainHeight) && allVerts[i].y > (waterLevel + mountainHeight * 0.05))
             {
 
-                terrainColor[i] = new Color(30/255f, 130/255f, 76/255f, 1.0f); // grasslandrgba(30/255, 130/255, 76/255, 1)
+                terrainColor[i] = new Color(30/255f, 130/255f, 76/255f, 1.0f); // grassland rgba(30/255, 130/255, 76/255, 1)
 
             }
-            else if (allVerts[i].y > -currMaxHeight * 0.2 && allVerts[i].y < -currMaxHeight * 0.1)
+            else if (allVerts[i].y > waterLevel && allVerts[i].y < (waterLevel + mountainHeight * 0.05))
             {
 
-                terrainColor[i] = new Color(0.5f, 0.5f, 0.0f, 1.0f); // beach
+                terrainColor[i] = new Color(129/255f, 108/255f, 91/255f, 1.0f); // beach (129,108,91)
 
             }
-            else if (allVerts[i].y > -currMaxHeight * 0.3 && allVerts[i].y < -currMaxHeight * 0.2)
+            
+            else if (allVerts[i].y < waterLevel)
             {
 
-                terrainColor[i] = new Color(0.5f, 0.5f, 0.0f, 1.0f); //beach
-
-            }
-            else if (allVerts[i].y < -currMaxHeight * 0.3)
-            {
-
-                terrainColor[i] = new Color(0.5f, 0.5f, 0.0f, 1.0f); //beach
+                terrainColor[i] = new Color(69/255f, 59/255f, 048/255f, 1.0f); //riverbed(69,59,48)
 
             }
         }
@@ -196,16 +197,16 @@ public class DiamondSquare : MonoBehaviour
 
     // Diamond steps
     void diamond(int top, int bot, int mid, int size, float noise ){
-        allVerts[mid].y = (allVerts[top].y + allVerts[top+size].y + allVerts[bot+size].y + allVerts[bot].y)*0.25f + Random.Range(-noise, noise);
+        allVerts[mid].y = (allVerts[top].y + allVerts[top+size].y + allVerts[bot+size].y + allVerts[bot].y)*0.25f + UnityEngine.Random.Range(-noise, noise);
     }
 
     // Square steps
     void square(int top, int bot, int mid, int size, float noise){
         int half = (int)(size*0.5f);
 
-        allVerts[top+half].y = (allVerts[top].y + allVerts[top+size].y + allVerts[mid].y)/3 + Random.Range(-noise, noise);
-        allVerts[mid-half].y = (allVerts[top].y + allVerts[bot].y + allVerts[mid].y)/3 + Random.Range(-noise, noise);
-        allVerts[mid+half].y = (allVerts[top+size].y + allVerts[mid].y + allVerts[bot+size].y)/3 + Random.Range(-noise, noise);
-        allVerts[bot+half].y = (allVerts[bot+size].y + allVerts[bot].y + allVerts[mid].y)/3 + Random.Range(-noise, noise);
+        allVerts[top+half].y = (allVerts[top].y + allVerts[top+size].y + allVerts[mid].y)/3 + UnityEngine.Random.Range(-noise, noise);
+        allVerts[mid-half].y = (allVerts[top].y + allVerts[bot].y + allVerts[mid].y)/3 + UnityEngine.Random.Range(-noise, noise);
+        allVerts[mid+half].y = (allVerts[top+size].y + allVerts[mid].y + allVerts[bot+size].y)/3 + UnityEngine.Random.Range(-noise, noise);
+        allVerts[bot+half].y = (allVerts[bot+size].y + allVerts[bot].y + allVerts[mid].y)/3 + UnityEngine.Random.Range(-noise, noise);
     }
 }
